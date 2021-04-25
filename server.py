@@ -1,5 +1,5 @@
 import socket
-from _thread import *
+import threading
 import _pickle as pickle
 import sys
 playerId=0
@@ -24,6 +24,19 @@ except socket.error as e:
     print("server could not connect")
 s.listen()
 print("waiting for connection,server started")
+def checkNewConnections():
+    global connections,playerId
+    playerId+=1
+    conn,addr=s.accept()
+    connections+=1
+    allConnections[playerId]=conn
+    allAddress[playerId]=addr
+    data=conn.recv(1024)
+    name=data.decode("utf-8")
+    conn.send(str.encode(str(playerId)))
+    print(f"{name} connected")
+    player=Player(name,playerId)
+    game.playerList.append(player)
 def setConnections():
     global connections
     for player in game.removeList:
@@ -32,11 +45,10 @@ def setConnections():
             conn=allConnections[player.id]
             conn.close()
             connections-=1
-    if connections>=2:
-        playGame()
-    else:
-        global roundStarted
-        roundStarted=False
+    start_time=threading.Timer(3,playGame)
+    start_time.start()
+    checkNewConnections()
+
 def askPlayers():
     index=game.playersOnGame.index(game.firstActor)
     game.readyList.clear()
