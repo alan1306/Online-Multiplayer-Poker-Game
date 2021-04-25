@@ -1,2 +1,2 @@
 # Poker Game
-a texas holdem poker game using python
+a online multiplayer texas holdem poker game using python and python sockets
