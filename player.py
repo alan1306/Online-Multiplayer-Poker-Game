@@ -1,3 +1,4 @@
+#decalring the players
 class Player():
     def __init__(self,name=None,playerId=None):
         self.name=name
